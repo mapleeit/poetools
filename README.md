@@ -36,3 +36,7 @@ See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-
 ## Todos
 
 - [ ] Relocate libnut.node
+- [ ] Get PoE window size
+- [ ] Infer each currency's position
+- [ ] Automation of alter
+- [ ] Automation of map rerolls
