@@ -29,17 +29,18 @@
  */
 
 import { contextBridge } from 'electron'
-const core = require('bindings')('libnut')
+import { MouseAction } from './tools/MouseAction'
+const mouseAction = new MouseAction();
 
-contextBridge.exposeInMainWorld('electron', {
-  moveMouse: async (x: number, y: number) => {
-    return new Promise((resolve, reject) => {
-      try {
-        core.moveMouse(x, y)
-        resolve(true)
-      } catch (error) {
-        reject(error)
-      }
-    })
-  }
-})
+const convertToInterface = (object: object) => {
+  const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(object))
+    .filter(name => name !== 'constructor');
+
+  return methods.reduce((acc, method) => ({
+    ...acc,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [method]: (...args: unknown[]) => (object as any)[method](...args)
+  }), {} as Record<string, (...args: unknown[]) => unknown>);
+}
+
+contextBridge.exposeInMainWorld('mouseApi', convertToInterface(mouseAction))

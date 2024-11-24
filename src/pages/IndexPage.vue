@@ -5,7 +5,9 @@
 </template>
 
 <script setup lang="ts">
+import { Point } from '../../shared/Point'
+
 const moveMouse = () => {
-  window.electron.moveMouse(100, 100)
+  window.mouseApi.setMousePosition(new Point(100, 100))
 }
 </script>

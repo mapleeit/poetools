@@ -1,9 +1,7 @@
-export interface IElectronAPI {
-  moveMouse(x: number, y: number): void;
-}
+import type { MouseProviderInterface } from '../shared/MouseAction.interface'
 
 declare global {
   interface Window {
-    electron: IElectronAPI
+    mouseApi: MouseProviderInterface
   }
 }
