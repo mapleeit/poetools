@@ -36,6 +36,9 @@ See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-
 ## Todos
 
 - [ ] Relocate libnut.node
+- [x] Mouse API
+- [x] Keyboard API
+- [ ] Shotcut
 - [ ] Get PoE window size
 - [ ] Infer each currency's position
 - [ ] Automation of alter

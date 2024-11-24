@@ -30,8 +30,7 @@
 
 import { contextBridge } from 'electron'
 import { MouseAction } from './tools/MouseAction'
-const mouseAction = new MouseAction();
-
+import { KeyboardAction } from './tools/KeyboardAction'
 const convertToInterface = (object: object) => {
   const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(object))
     .filter(name => name !== 'constructor');
@@ -43,4 +42,5 @@ const convertToInterface = (object: object) => {
   }), {} as Record<string, (...args: unknown[]) => unknown>);
 }
 
-contextBridge.exposeInMainWorld('mouseApi', convertToInterface(mouseAction))
+contextBridge.exposeInMainWorld('mouseApi', convertToInterface(new MouseAction()))
+contextBridge.exposeInMainWorld('keyboardApi', convertToInterface(new KeyboardAction()))
