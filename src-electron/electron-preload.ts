@@ -27,3 +27,19 @@
  *   }
  * }
  */
+
+import { contextBridge } from 'electron'
+const core = require('bindings')('libnut')
+
+contextBridge.exposeInMainWorld('electron', {
+  moveMouse: async (x: number, y: number) => {
+    return new Promise((resolve, reject) => {
+      try {
+        core.moveMouse(x, y)
+        resolve(true)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+})
