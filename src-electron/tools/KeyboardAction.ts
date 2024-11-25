@@ -1,7 +1,9 @@
+import bindings from 'bindings'
+
 import { Key } from '../../shared/Key';
 import type { KeyboardProviderInterface } from '../../shared/KeyboardAction.interface';
 
-const libnut = require('bindings')('libnut')
+const libnut = bindings('libnut')
 
 export class KeyboardAction implements KeyboardProviderInterface {
   public static KeyLookupMap = new Map<Key, string | null>([

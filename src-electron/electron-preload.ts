@@ -28,7 +28,7 @@
  * }
  */
 
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { MouseAction } from './tools/MouseAction'
 import { KeyboardAction } from './tools/KeyboardAction'
 const convertToInterface = (object: object) => {
@@ -44,3 +44,6 @@ const convertToInterface = (object: object) => {
 
 contextBridge.exposeInMainWorld('mouseApi', convertToInterface(new MouseAction()))
 contextBridge.exposeInMainWorld('keyboardApi', convertToInterface(new KeyboardAction()))
+contextBridge.exposeInMainWorld('ioApi', {
+  send: (event: string, data: unknown) => ipcRenderer.invoke(event, data)
+})

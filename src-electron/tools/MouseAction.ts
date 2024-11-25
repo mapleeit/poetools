@@ -1,8 +1,10 @@
+import bindings from 'bindings'
+
 import type { MouseProviderInterface } from '../../shared/MouseAction.interface';
 import { Button } from '../../shared/Button';
 import { Point } from '../../shared/Point';
 
-const libnut = require('bindings')('libnut')
+const libnut = bindings('libnut')
 
 export class MouseAction implements MouseProviderInterface {
   public static buttonLookup(btn: Button): string | undefined {

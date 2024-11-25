@@ -1,7 +1,9 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, globalShortcut, ipcMain } from 'electron';
 import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url'
+
+import { Alter } from './tools/Alter';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -51,7 +53,24 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+const alter = new Alter()
+let modifiers: [string, string] | undefined
+app.whenReady().then(() => {
+  ipcMain.handle('auto-alter', (event, data) => {
+    modifiers = [data.modifier1, data.modifier2]
+  })
+}).then(() => {
+  globalShortcut.register('F2', async () => {
+    if (alter.altering) {
+      alter.stop()
+    } else {
+      await alter.batchAlter({
+        maxTimes: 100,
+        conditions: modifiers ?? []
+      })
+    }
+  });
+}).then(createWindow);
 
 app.on('window-all-closed', () => {
   if (platform !== 'darwin') {
