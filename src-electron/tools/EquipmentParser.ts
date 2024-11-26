@@ -101,6 +101,12 @@ export class EquipmentParser {
         continue
       }
 
+      // Parse sockets
+      if (trimmedLine.startsWith('插槽:')) {
+        equipment.sockets = trimmedLine.split(':')[1]?.trim() ?? ''
+        continue
+      }
+
       // Parse properties after itemLevel and its following ----
       if (currentSection === 'properties') {
         if (/^-{4,}$/.test(trimmedLine)) {
