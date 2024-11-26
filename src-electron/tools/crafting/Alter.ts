@@ -4,11 +4,11 @@ import { createLogger, format, transports } from 'winston'
 import { Button } from 'app/shared/Button'
 import { Key } from 'app/shared/Key'
 
-import { MouseAction } from './MouseAction'
-import { KeyboardAction } from './KeyboardAction'
-import type { Equipment } from './EquipmentParser';
-import { EquipmentParser, EquipmentRarity, UNDEFINED_EQUIPMENT_DESCRIPTION } from './EquipmentParser'
-import { PositionManager } from './PositionManager'
+import { MouseAction } from '../MouseAction'
+import { KeyboardAction } from '../KeyboardAction'
+import type { Equipment } from '../EquipmentParser';
+import { EquipmentParser, EquipmentRarity, UNDEFINED_EQUIPMENT_DESCRIPTION } from '../EquipmentParser'
+import { PositionManager } from '../PositionManager'
 
 export class Alter {
   private mouseAction = new MouseAction()

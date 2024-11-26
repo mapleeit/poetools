@@ -3,8 +3,8 @@ import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url'
 
-import { Alter } from './tools/Alter';
-import { Tujen } from './tools/Tujen';
+import { Alter } from './tools/crafting/Alter';
+import { Tujen } from './tools/kalguuran/Tujen';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();

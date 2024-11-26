@@ -2,11 +2,11 @@ import { clipboard } from 'electron';
 
 import { Button } from 'app/shared/Button';
 import { Point } from 'app/shared/Point';
-import { PositionManager } from './PositionManager';
+import { PositionManager } from '../PositionManager';
 import { Key } from 'app/shared/Key';
 
-import { MouseAction } from './MouseAction';
-import { KeyboardAction } from './KeyboardAction';
+import { MouseAction } from '../MouseAction';
+import { KeyboardAction } from '../KeyboardAction';
 import { createLogger, format, transports } from 'winston';
 
 export class Tujen {
