@@ -7,7 +7,7 @@ import { Key } from 'app/shared/Key'
 import { MouseAction } from './MouseAction'
 import { KeyboardAction } from './KeyboardAction'
 import type { Equipment } from './EquipmentParser';
-import { EquipmentParser, EquipmentRarity } from './EquipmentParser'
+import { EquipmentParser, EquipmentRarity, UNDEFINED_EQUIPMENT_DESCRIPTION } from './EquipmentParser'
 import { PositionManager } from './PositionManager'
 
 export class Alter {
@@ -41,8 +41,11 @@ export class Alter {
     conditions: string[]
   }) {
     this.reset()
+
+    await this.mouseAction.setMousePosition(this.positionManager.item)
+    await this.delay()
     const itemDescription = await this.readItemDescription()
-    let equipment = this.equipmentParser.parseMagicEquipment(itemDescription)
+    let equipment = this.equipmentParser.parseEquipment(itemDescription)
     if (this.validateConditions(equipment, options.conditions)) {
       this.logger.info('batch alter: start success')
       this.logger.debug(equipment)
@@ -91,6 +94,10 @@ export class Alter {
 
   // Set equipment to magic if it's not magic
   private async initEquipment(equipment: Equipment) {
+    if (equipment.properties.includes(UNDEFINED_EQUIPMENT_DESCRIPTION)) {
+      await this.useKnowledgeScroll()
+    }
+
     switch (equipment.rarity) {
       case EquipmentRarity.MAGIC:
         return
@@ -104,6 +111,17 @@ export class Alter {
       default:
         throw new Error('Invalid equipment rarity')
     }
+  }
+
+  private async useKnowledgeScroll() {
+    await this.mouseAction.setMousePosition(this.positionManager.knowledgeScroll)
+    await this.delay()
+    await this.mouseAction.click(Button.RIGHT)
+    await this.delay()
+    await this.mouseAction.setMousePosition(this.positionManager.item)
+    await this.delay()
+    await this.mouseAction.click(Button.LEFT)
+    await this.delay()
   }
 
   private async useOrbOfScouring() {
@@ -141,7 +159,7 @@ export class Alter {
 
   private async readItemDescription() {
     await this.keyboardAction.click(Key.LeftControl, Key.C)
-    await this.delay()
+    await this.delay([100, 200])
     const itemDescription = clipboard.readText()
     await this.delay()
     return itemDescription
@@ -156,7 +174,7 @@ export class Alter {
     this.logger.info(`altered: end ${this.times}`)
 
     this.times++;
-    return this.equipmentParser.parseMagicEquipment(itemDescription);
+    return this.equipmentParser.parseEquipment(itemDescription);
   }
 
   private validateConditions(equipment: Equipment, conditions: string[]) {

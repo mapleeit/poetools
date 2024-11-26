@@ -4,6 +4,7 @@ import os from 'os';
 import { fileURLToPath } from 'url'
 
 import { Alter } from './tools/Alter';
+import { Tujen } from './tools/Tujen';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -54,6 +55,7 @@ function createWindow() {
 }
 
 const alter = new Alter()
+const tujen = new Tujen()
 let modifiers: [string, string] | undefined
 app.whenReady().then(() => {
   ipcMain.handle('auto-alter', (event, data) => {
@@ -65,10 +67,17 @@ app.whenReady().then(() => {
       alter.stop()
     } else {
       await alter.batchAlter({
-        maxTimes: 100,
         conditions: modifiers ?? []
       })
     }
+  });
+
+  globalShortcut.register('F3', async () => {
+    await tujen.batchExchange()
+  });
+
+  globalShortcut.register('F4', async () => {
+    await tujen.goNextPage()
   });
 }).then(createWindow);
 

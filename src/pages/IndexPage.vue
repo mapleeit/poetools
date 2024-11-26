@@ -22,5 +22,6 @@ watchEffect(() => {
 
 onMounted(() => {
   modifier1.value = '灿烂的'
+  modifier2.value = '稳步坚决的'
 })
 </script>

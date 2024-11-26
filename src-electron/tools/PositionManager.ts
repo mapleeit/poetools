@@ -1,7 +1,11 @@
 import { Point } from 'app/shared/Point'
 
 export class PositionManager {
+  // ------------ Stash ------------
   public item = new Point(656, 901)
+
+  // first row
+  public knowledgeScroll = new Point(221, 386)
 
   // Second row
   public transmutationOrb = new Point(117, 536)
@@ -23,4 +27,20 @@ export class PositionManager {
 
   // Sixth row
   public orbOfScouring = new Point(870, 1017)
+
+  // ------------ Tujen ------------
+  public item1_1 = new Point(672, 577)
+  public item1_2 = new Point(672, 677)
+  public item1_3 = new Point(672, 777)
+  public item1_4 = new Point(672, 877)
+  public item1_5 = new Point(672, 977)
+  public item1_6 = new Point(672, 1077)
+  public item1_7 = new Point(672, 1177)
+  public item1_8 = new Point(672, 1277)
+  public item1_9 = new Point(672, 1377)
+  public item1_10 = new Point(672, 1477)
+  public item1_11 = new Point(672, 1577)
+
+  public confirm = new Point(1256, 1726)
+  public nextPage = new Point(1899, 1748)
 }

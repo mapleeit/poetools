@@ -66,6 +66,7 @@ module.exports = {
     'semi': 'off',
     'comma-dangle': 'off',
     'space-before-function-paren': 'off',
+    'no-labels': 'off',
     // allow async-await
     'generator-star-spacing': 'off',
     // allow paren-less arrow functions

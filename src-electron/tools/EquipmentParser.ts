@@ -26,6 +26,8 @@ export enum EquipmentRarity {
   NORMAL = '普通'
 }
 
+export const UNDEFINED_EQUIPMENT_DESCRIPTION = '未鉴定'
+
 export class EquipmentParser {
   private logger = createLogger({
     level: 'info',
@@ -34,7 +36,7 @@ export class EquipmentParser {
     transports: [new transports.Console()]
   })
 
-  public parseMagicEquipment(description: string): Equipment {
+  public parseEquipment(description: string): Equipment {
     const lines = description.split('\n')
     const equipment = {} as Equipment
     let currentSection = ''
