@@ -158,8 +158,10 @@ export class Alter {
   }
 
   private async readItemDescription() {
+    await this.mouseAction.setMousePosition(this.positionManager.item)
+    await this.delay()
     await this.keyboardAction.click(Key.LeftControl, Key.C)
-    await this.delay([100, 200])
+    await this.delay()
     const itemDescription = clipboard.readText()
     await this.delay()
     return itemDescription
