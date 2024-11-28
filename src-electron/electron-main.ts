@@ -3,8 +3,9 @@ import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url'
 
-import { Alter } from './tools/crafting/Alter';
-import { Tujen } from './tools/kalguuran/Tujen';
+import { Alter } from './tools/crafting/Alter'
+import { Tujen } from './tools/kalguuran/Tujen'
+import { Saver } from './tools/inventory/Saver'
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -56,6 +57,7 @@ function createWindow() {
 
 const alter = new Alter()
 const tujen = new Tujen()
+const saver = new Saver()
 let modifiers: [string, string] | undefined
 app.whenReady().then(() => {
   ipcMain.handle('auto-alter', (event, data) => {
@@ -78,6 +80,22 @@ app.whenReady().then(() => {
 
   globalShortcut.register('F4', async () => {
     await tujen.goNextPage()
+  });
+
+  globalShortcut.register('F6', async () => {
+    if (saver.saving) {
+      saver.stop()
+    } else {
+      await saver.batchSaveFromCurrentCursorPosition()
+    }
+  });
+
+  globalShortcut.register('CommandOrControl+F6', async () => {
+    if (saver.saving) {
+      saver.stop()
+    } else {
+      await saver.batchSaveFromCurrentCursorPosition()
+    }
   });
 }).then(createWindow);
 

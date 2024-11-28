@@ -1,4 +1,5 @@
 import { clipboard } from 'electron';
+import { createLogger, format, transports } from 'winston';
 
 import { Button } from 'app/shared/Button';
 import { Point } from 'app/shared/Point';
@@ -7,7 +8,6 @@ import { Key } from 'app/shared/Key';
 
 import { MouseAction } from '../MouseAction';
 import { KeyboardAction } from '../KeyboardAction';
-import { createLogger, format, transports } from 'winston';
 
 export class Tujen {
   private positionManager = new PositionManager()
@@ -42,6 +42,7 @@ export class Tujen {
   private logger = createLogger({
     level: 'info',
     format: format.json(),
+    defaultMeta: { service: 'tujen' },
     transports: [new transports.Console({
       level: 'debug'
     })]
