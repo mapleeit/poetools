@@ -1,20 +1,12 @@
 import { clipboard } from 'electron';
-import { createLogger, format, transports } from 'winston';
-
 import { Button } from 'app/shared/Button';
 import { Point } from 'app/shared/Point';
 import { PositionManager } from '../PositionManager';
 import { Key } from 'app/shared/Key';
+import { BaseTool } from '../BaseTool';
 
-import { MouseAction } from '../MouseAction';
-import { KeyboardAction } from '../KeyboardAction';
-
-export class Tujen {
+export class Tujen extends BaseTool {
   private positionManager = new PositionManager()
-  private mouseAction = new MouseAction()
-  private keyboardAction = new KeyboardAction()
-
-  private delayRange: [number, number] = [20, 80]
 
   private valuableCurrencies = [
     '神圣石',
@@ -39,14 +31,9 @@ export class Tujen {
 
   private last2ItemsDescription: string[] = ['', '']
 
-  private logger = createLogger({
-    level: 'info',
-    format: format.json(),
-    defaultMeta: { service: 'tujen' },
-    transports: [new transports.Console({
-      level: 'debug'
-    })]
-  })
+  constructor() {
+    super('tujen');
+  }
 
   public async batchExchange() {
     columnLoop:
@@ -100,12 +87,6 @@ export class Tujen {
     }
 
     this.last2ItemsDescription = [this.last2ItemsDescription[1]!, itemDescription]
-  }
-
-  private async delay(range: [number, number] = this.delayRange) {
-    const delay = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0]
-    this.logger.debug(`Delaying ${delay}ms`)
-    await new Promise(resolve => setTimeout(resolve, delay))
   }
 
   private async readItemDescription() {

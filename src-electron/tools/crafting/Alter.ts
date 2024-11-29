@@ -1,29 +1,13 @@
 import { clipboard } from 'electron'
-import { createLogger, format, transports } from 'winston'
-
 import { Button } from 'app/shared/Button'
 import { Key } from 'app/shared/Key'
 
-import { MouseAction } from '../MouseAction'
-import { KeyboardAction } from '../KeyboardAction'
 import type { Equipment } from '../EquipmentParser';
 import { EquipmentParser, EquipmentRarity, UNDEFINED_EQUIPMENT_DESCRIPTION } from '../EquipmentParser'
 import { PositionManager } from '../PositionManager'
+import { BaseTool } from '../BaseTool'
 
-export class Alter {
-  private mouseAction = new MouseAction()
-  private keyboardAction = new KeyboardAction()
-  private delayRange: [number, number] = [20, 80]
-
-  private logger = createLogger({
-    level: 'info',
-    defaultMeta: { service: 'alter' },
-    format: format.json(),
-    transports: [new transports.Console({
-      level: 'debug'
-    })]
-  })
-
+export class Alter extends BaseTool {
   private equipmentParser = new EquipmentParser()
   private positionManager = new PositionManager()
 
@@ -31,9 +15,8 @@ export class Alter {
   private stopSignal = false;
   public altering = false
 
-  private async delay(range: [number, number] = this.delayRange) {
-    const delay = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0]
-    await new Promise(resolve => setTimeout(resolve, delay))
+  constructor() {
+    super('alter');
   }
 
   public async batchAlter(options: {

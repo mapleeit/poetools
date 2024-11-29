@@ -1,29 +1,16 @@
-import { createLogger, format, transports } from 'winston';
-
-import { PositionManager } from './PositionManager';
-import { KeyboardAction } from '../KeyboardAction';
-import { MouseAction } from '../MouseAction';
-import { Key } from 'app/shared/Key';
 import { Button } from 'app/shared/Button';
+import { BaseTool } from '../BaseTool';
+import { PositionManager } from './PositionManager';
+import { Key } from 'app/shared/Key';
 
-export class Saver {
+export class Saver extends BaseTool {
   private inventoryPositionManager = new PositionManager()
-  private mouseAction = new MouseAction()
-  private keyboardAction = new KeyboardAction()
-
   private stopSignal = false;
   public saving = false
 
-  private delayRange: [number, number] = [20, 80]
-
-  private logger = createLogger({
-    level: 'info',
-    format: format.json(),
-    defaultMeta: { service: 'saver' },
-    transports: [new transports.Console({
-      level: 'debug'
-    })]
-  })
+  constructor() {
+    super('saver');
+  }
 
   async batchSaveFromCurrentCursorPosition() {
     let row = 1;
@@ -71,11 +58,5 @@ export class Saver {
 
   public stop() {
     this.stopSignal = true
-  }
-
-  private async delay(range: [number, number] = this.delayRange) {
-    const delay = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0]
-    this.logger.debug(`Delaying ${delay}ms`)
-    await new Promise(resolve => setTimeout(resolve, delay))
   }
 }
