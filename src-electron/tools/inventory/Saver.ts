@@ -26,7 +26,15 @@ export class Saver {
   })
 
   async batchSaveFromCurrentCursorPosition() {
-    const { row, column } = await this.inventoryPositionManager.getCurrentCursorRowColumn()
+    let row = 1;
+    let column = 1;
+
+    try {
+      ({ row, column } = await this.inventoryPositionManager.getCurrentCursorRowColumn())
+    } catch (error) {
+      this.logger.info('batch save: get current cursor position failed, start from 1,1')
+    }
+
     this.logger.info(`batch save: current cursor position ${row}, ${column}`)
     await this.batchSave(row, column)
   }
@@ -50,7 +58,7 @@ export class Saver {
         this.logger.info(` - Saving from position ${row}, ${column}`)
         const position = this.inventoryPositionManager.getPosition(row, column)
 
-        await this.delay([0, 10])
+        await this.delay([20, 20])
         await this.mouseAction.setMousePosition(position)
         await this.mouseAction.click(Button.LEFT)
       }
