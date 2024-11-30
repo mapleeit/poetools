@@ -1,5 +1,7 @@
 import { createLogger, format, transports } from 'winston';
 
+import { EquipmentProperty } from './EquipmentProperty'
+
 export interface Equipment {
   name: string[];
   category: string;
@@ -17,7 +19,8 @@ export interface Equipment {
   };
   sockets: string;
   itemLevel: number;
-  properties: string[];
+  baseProperties: EquipmentProperty[];
+  properties: EquipmentProperty[];
   effects: string[];
 }
 
@@ -84,6 +87,10 @@ export class EquipmentParser {
         }
 
         if (currentSection === 'properties') {
+          if (equipment.properties.length === 1) {
+            equipment.baseProperties = [...equipment.properties]
+            equipment.properties = []
+          }
           continue
         }
 
@@ -144,7 +151,7 @@ export class EquipmentParser {
 
       // Parse properties after itemLevel and its following ----
       if (currentSection === 'properties') {
-        equipment.properties.push(trimmedLine)
+        equipment.properties.push(new EquipmentProperty(trimmedLine))
         continue
       }
     }

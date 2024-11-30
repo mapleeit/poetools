@@ -2,6 +2,7 @@ import { describe, it, beforeEach } from 'node:test'
 import assert from 'node:assert'
 
 import { EquipmentParser } from './EquipmentParser'
+import { EquipmentProperty } from './EquipmentProperty'
 
 describe('EquipmentParser', () => {
   let parser: EquipmentParser
@@ -44,8 +45,8 @@ describe('EquipmentParser', () => {
         sockets: 'B-R',
         itemLevel: 84,
         properties: [
-          '能量护盾充能时间提前 29%',
-          '+113 最大生命'
+          new EquipmentProperty('能量护盾充能时间提前 29%'),
+          new EquipmentProperty('+113 最大生命')
         ],
         effects: []
       })
@@ -87,9 +88,9 @@ describe('EquipmentParser', () => {
         sockets: 'R-R',
         itemLevel: 85,
         properties: [
-          '能量护盾充能时间提前 40%',
-          '+36 最大魔力',
-          '+1 灵体数量上限'
+          new EquipmentProperty('能量护盾充能时间提前 40%'),
+          new EquipmentProperty('+36 最大魔力'),
+          new EquipmentProperty('+1 灵体数量上限')
         ],
         effects: []
       })
@@ -124,10 +125,12 @@ describe('EquipmentParser', () => {
           level: 24
         },
         itemLevel: 84,
+        baseProperties: [
+          new EquipmentProperty('物品稀有度提高 14% (implicit)'),
+        ],
         properties: [
-          '物品稀有度提高 14% (implicit)',
-          '+71 最大生命',
-          '每秒再生 2 生命'
+          new EquipmentProperty('+71 最大生命'),
+          new EquipmentProperty('每秒再生 2 生命')
         ],
         effects: [
           '圣战者物品'

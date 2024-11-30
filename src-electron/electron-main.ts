@@ -3,7 +3,7 @@ import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url'
 
-import { Alter } from './tools/crafting/Alter'
+import { Alter, type AlterCondition } from './tools/crafting/Alter'
 import { Tujen } from './tools/kalguuran/Tujen'
 import { Saver } from './tools/inventory/Saver'
 
@@ -59,7 +59,8 @@ function createWindow() {
 const alter = new Alter()
 const tujen = new Tujen()
 const saver = new Saver()
-let modifiers: [string, string] | undefined
+
+let modifiers: AlterCondition[] | undefined
 app.whenReady().then(() => {
   ipcMain.handle('auto-alter', (event, data) => {
     modifiers = [data.modifier1, data.modifier2]
