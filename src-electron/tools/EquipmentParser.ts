@@ -1,6 +1,5 @@
-import { createLogger, format, transports } from 'winston';
-
 import { EquipmentProperty } from './EquipmentProperty'
+import { logger } from './logger'
 
 export interface Equipment {
   name: string[];
@@ -41,14 +40,7 @@ export const UNDEFINED_EQUIPMENT_DESCRIPTION = '未鉴定'
 export const CURRENCY_DESCRIPTION = '出售获得通货'
 
 export class EquipmentParser {
-  private logger = createLogger({
-    level: 'info',
-    defaultMeta: { service: 'equipment-parser' },
-    format: format.json(),
-    transports: [new transports.Console({
-      level: 'debug'
-    })]
-  })
+  private logger = logger.child({ service: 'equipment-parser' })
 
   private SEPARATOR_REGEXP = /^-{4,}$/
 

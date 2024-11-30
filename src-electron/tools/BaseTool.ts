@@ -1,6 +1,6 @@
-import { createLogger, format, transports } from 'winston';
 import { MouseAction } from './MouseAction';
 import { KeyboardAction } from './KeyboardAction';
+import { logger } from './logger';
 
 export abstract class BaseTool {
   protected mouseAction = new MouseAction();
@@ -10,16 +10,7 @@ export abstract class BaseTool {
   protected logger;
 
   constructor(service: string) {
-    this.logger = createLogger({
-      level: 'info',
-      format: format.json(),
-      defaultMeta: { service },
-      transports: [
-        new transports.Console({
-          level: 'debug',
-        }),
-      ],
-    });
+    this.logger = logger.child({ service });
   }
 
   protected async delay(range: [number, number] = this.delayRange) {
