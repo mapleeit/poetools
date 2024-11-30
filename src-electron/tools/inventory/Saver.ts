@@ -17,9 +17,10 @@ export class Saver extends BaseTool {
     let column = 1;
 
     try {
+      this.logger.info('batch save: get current cursor position');
       ({ row, column } = await this.inventoryPositionManager.getCurrentCursorRowColumn())
     } catch (error) {
-      this.logger.info('batch save: get current cursor position failed, start from 1,1')
+      this.logger.info('batch save: current cursor is not in inventory, start from 1,1')
     }
 
     this.logger.info(`batch save: current cursor position ${row}, ${column}`)
@@ -45,7 +46,7 @@ export class Saver extends BaseTool {
         this.logger.info(` - Saving from position ${row}, ${column}`)
         const position = this.inventoryPositionManager.getPosition(row, column)
 
-        await this.delay([20, 20])
+        await this.delay([20, 40])
         await this.mouseAction.setMousePosition(position)
         await this.mouseAction.click(Button.LEFT)
       }

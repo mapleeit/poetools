@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-card class="q-ma-md" flat>
+    <q-card class="q-pa-md" flat>
       <q-input clearable filled color="green" v-model="modifier1" label="Modifier 1" />
       <q-input clearable filled color="green" v-model="modifier2" label="Modifier 2" class="q-mt-md" />
     </q-card>
@@ -21,7 +21,7 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-  modifier1.value = '灿烂的'
+  modifier1.value = '能量护盾上限提高'
   modifier2.value = '稳步坚决的'
 })
 </script>

@@ -19,17 +19,21 @@ export class Alter extends BaseTool {
     super('alter');
   }
 
-  public async batchAlter(options: {
+  public async batchAlter({
+    maxTimes = 0,
+    conditions
+  }: {
     maxTimes?: number,
     conditions: string[]
   }) {
+    this.logger.info(`batch alter: start condition ${maxTimes === 0 ? 'Infinity' : `${maxTimes} times`}`)
     this.reset()
 
     await this.mouseAction.setMousePosition(this.positionManager.item)
     await this.delay()
     const itemDescription = await this.readItemDescription()
     let equipment = this.equipmentParser.parseEquipment(itemDescription)
-    if (this.validateConditions(equipment, options.conditions)) {
+    if (this.validateConditions(equipment, conditions)) {
       this.logger.info('batch alter: start success')
       this.logger.debug(equipment)
       return equipment
@@ -37,14 +41,12 @@ export class Alter extends BaseTool {
 
     await this.initEquipment(equipment);
 
-    this.altering = true
-
-    const { maxTimes = 0, conditions } = options
     if (conditions.length === 0) {
       throw new Error('Conditions is required')
     }
 
-    this.logger.info(`batch alter: start condition ${maxTimes === 0 ? 'Infinity' : `${maxTimes} times`}`)
+    this.logger.debug(`Conditions: ${conditions}`)
+    this.altering = true
     for (let i = 0; i < (maxTimes === 0 ? Infinity : maxTimes); i++) {
       if (this.stopSignal) {
         this.logger.info('batch alter: end by stop signal')
@@ -167,7 +169,10 @@ export class Alter extends BaseTool {
       case EquipmentRarity.MAGIC:
         return conditions
           .filter(condition => condition.trim() !== '')
-          .some(condition => [...equipment.properties, ...equipment.name].some(p => p.includes(condition)))
+          .some(condition => [...equipment.properties, ...equipment.name].some(p => {
+            this.logger.debug(`condition: ${condition}, property: ${p}`)
+            return p.includes(condition)
+          }))
       case EquipmentRarity.RARE:
         return false
       default:

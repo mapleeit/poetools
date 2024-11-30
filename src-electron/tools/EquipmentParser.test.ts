@@ -46,7 +46,8 @@ describe('EquipmentParser', () => {
         properties: [
           '能量护盾充能时间提前 29%',
           '+113 最大生命'
-        ]
+        ],
+        effects: []
       })
     })
 
@@ -89,6 +90,47 @@ describe('EquipmentParser', () => {
           '能量护盾充能时间提前 40%',
           '+36 最大魔力',
           '+1 灵体数量上限'
+        ],
+        effects: []
+      })
+    })
+
+    it('should parse magic ring', () => {
+      const description = `物品类别: 戒指
+稀 有 度: 魔法
+健壮的蝾螈之金光戒指
+--------
+需求:
+等级: 24
+--------
+物品等级: 84
+--------
+物品稀有度提高 14% (implicit)
+--------
++71 最大生命
+每秒再生 2 生命
+--------
+圣战者物品
+--------
+出售获得通货:非绑定`
+
+      const result = parser.parseEquipment(description)
+
+      assert.deepEqual(result, {
+        category: '戒指',
+        rarity: '魔法',
+        name: ['健壮的蝾螈之金光戒指'],
+        requirements: {
+          level: 24
+        },
+        itemLevel: 84,
+        properties: [
+          '物品稀有度提高 14% (implicit)',
+          '+71 最大生命',
+          '每秒再生 2 生命'
+        ],
+        effects: [
+          '圣战者物品'
         ]
       })
     })

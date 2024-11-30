@@ -18,6 +18,7 @@ export interface Equipment {
   sockets: string;
   itemLevel: number;
   properties: string[];
+  effects: string[];
 }
 
 export enum EquipmentRarity {
@@ -26,31 +27,66 @@ export enum EquipmentRarity {
   NORMAL = '普通'
 }
 
+export enum EquipmentEffectType {
+  CRUSADER = '圣战者物品',
+  SHAPER = '塑界者物品',
+  EMBLEM = '灭界者物品',
+  FORGE = '焚界者物品'
+}
+
 export const UNDEFINED_EQUIPMENT_DESCRIPTION = '未鉴定'
+export const CURRENCY_DESCRIPTION = '出售获得通货'
 
 export class EquipmentParser {
   private logger = createLogger({
     level: 'info',
     defaultMeta: { service: 'equipment-parser' },
     format: format.json(),
-    transports: [new transports.Console()]
+    transports: [new transports.Console({
+      level: 'debug'
+    })]
   })
 
+  private SEPARATOR_REGEXP = /^-{4,}$/
+
   public parseEquipment(description: string): Equipment {
-    const lines = description.split('\n')
+    let lines = description.split(/\r\n|\n/)
     const equipment = {} as Equipment
     let currentSection = ''
+
+    equipment.effects = this.parseEffect(lines)
+    for (const effect of equipment.effects) {
+      lines = lines.map(line => line.replace(effect, ''))
+    }
+
+    for (let i = 1; i < lines.length; i++) {
+      const lastLine = lines[lines.length - 1]
+      if (
+        lastLine?.trim() === '' ||
+        this.SEPARATOR_REGEXP.test(lastLine?.trim() ?? '') ||
+        lastLine?.trim().startsWith(CURRENCY_DESCRIPTION)
+      ) {
+        lines.pop()
+      } else {
+        break
+      }
+    }
 
     for (const line of lines) {
       const trimmedLine = line.trim()
 
       if (trimmedLine === '') continue
-      if (/^-{4,}$/.test(trimmedLine)) {
+      if (this.SEPARATOR_REGEXP.test(trimmedLine)) {
         if (currentSection === 'itemLevel') {
           currentSection = 'properties'
           equipment.properties = []
           continue
         }
+
+        if (currentSection === 'properties') {
+          continue
+        }
+
         currentSection = ''
         continue
       }
@@ -74,7 +110,7 @@ export class EquipmentParser {
 
       // Parse name
       if (currentSection === 'name') {
-        if (/^-{4,}$/.test(trimmedLine)) {
+        if (this.SEPARATOR_REGEXP.test(trimmedLine)) {
           currentSection = ''
           continue
         }
@@ -101,7 +137,6 @@ export class EquipmentParser {
         continue
       }
 
-      // Parse sockets
       if (trimmedLine.startsWith('插槽:')) {
         equipment.sockets = trimmedLine.split(':')[1]?.trim() ?? ''
         continue
@@ -109,15 +144,23 @@ export class EquipmentParser {
 
       // Parse properties after itemLevel and its following ----
       if (currentSection === 'properties') {
-        if (/^-{4,}$/.test(trimmedLine)) {
-          currentSection = ''
-          continue
-        }
         equipment.properties.push(trimmedLine)
         continue
       }
     }
 
+    this.logger.debug(equipment)
     return equipment
+  }
+
+  private parseEffect(lines: string[]): string[] {
+    const effects: string[] = []
+    for (const effect of Object.values(EquipmentEffectType)) {
+      if (lines.some(line => line.includes(effect))) {
+        effects.push(effect)
+      }
+    }
+
+    return effects
   }
 }
