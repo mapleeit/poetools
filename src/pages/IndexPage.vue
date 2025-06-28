@@ -1,12 +1,20 @@
 <template>
   <q-page>
     <q-card class="q-pa-md" flat>
-      <q-input clearable filled color="green" v-model="modifier1" label="Modifier 1" />
-      <q-input type="number" v-model="modifier1Min" label="Modifier 1 Min" class="q-mt-md" />
-      <q-input type="number" v-model="modifier1Max" label="Modifier 1 Max" class="q-mt-md" />
-      <q-input clearable filled color="green" v-model="modifier2" label="Modifier 2" class="q-mt-md" />
-      <q-input type="number" v-model="modifier2Min" label="Modifier 2 Min" class="q-mt-md" />
-      <q-input type="number" v-model="modifier2Max" label="Modifier 2 Max" class="q-mt-md" />
+      <div v-for="(modifier, index) in modifiers" :key="index" class="q-mb-lg">
+        <div class="row items-center">
+          <div class="col">
+            <q-input clearable filled color="green" v-model="modifier.description" :label="`Modifier ${index + 1}`" />
+          </div>
+          <div class="col-auto q-ml-md">
+            <q-btn flat round color="red" icon="remove" @click="removeModifier(index)" v-if="modifiers.length > 1"/>
+          </div>
+        </div>
+        <q-input type="number" v-model="modifier.min" :label="`Modifier ${index + 1} Min`" class="q-mt-md" />
+        <q-input type="number" v-model="modifier.max" :label="`Modifier ${index + 1} Max`" class="q-mt-md" />
+      </div>
+
+      <q-btn color="primary" class="q-mt-md" icon="add" label="Add Modifier" @click="addModifier" />
     </q-card>
   </q-page>
 </template>
@@ -14,34 +22,67 @@
 <script setup lang="ts">
 import { ref, watchEffect, onMounted } from 'vue'
 
-const modifier1 = ref('')
-const modifier1Min = ref(-Infinity)
-const modifier1Max = ref(Infinity)
-const modifier2 = ref('')
-const modifier2Min = ref(-Infinity)
-const modifier2Max = ref(Infinity)
+interface Modifier {
+  description: string
+  min: number
+  max: number
+}
+
+const modifiers = ref<Modifier[]>([
+  {
+    description: '',
+    min: -Infinity,
+    max: Infinity
+  },
+  {
+    description: '',
+    min: -Infinity,
+    max: Infinity
+  }
+])
+
+const addModifier = () => {
+  modifiers.value.push({
+    description: '',
+    min: -Infinity,
+    max: Infinity
+  })
+}
+
+const removeModifier = (index: number) => {
+  modifiers.value.splice(index, 1)
+}
 
 watchEffect(() => {
-  window.ioApi.send('auto-alter', {
-    modifier1: {
-      description: modifier1.value,
-      min: modifier1Min.value,
-      max: modifier1Max.value
-    },
-    modifier2: {
-      description: modifier2.value,
-      min: modifier2Min.value,
-      max: modifier2Max.value
+  const data = modifiers.value.reduce((acc, modifier, index) => {
+    acc[`modifier${index + 1}`] = {
+      description: modifier.description,
+      min: modifier.min,
+      max: modifier.max
     }
-  })
+    return acc
+  }, {} as Record<string, Modifier>)
+
+  window.ioApi.send('auto-alter', data)
 })
 
 onMounted(() => {
-  modifier1.value = '你被敌人击中时获得'
-  modifier1Min.value = 3
-  modifier1Max.value = 30
-  modifier2.value = '生效期间，护甲提高'
-  modifier2Min.value = 56
-  modifier2Max.value = 100
+  modifiers.value = [
+    {
+      description: '迸出的',
+      min: -Infinity,
+      max: Infinity
+    },
+    {
+      description: '无情的',
+      min: -Infinity,
+      max: Infinity
+    },
+    {
+      description: '独裁者的',
+      min: -Infinity,
+      max: Infinity
+    }
+  ]
 })
 </script>

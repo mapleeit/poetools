@@ -56,16 +56,19 @@ function createWindow() {
   });
 }
 
-const alter = new Alter()
-const tujen = new Tujen()
-const saver = new Saver()
+(async () => {
+  await app.whenReady();
 
-let modifiers: AlterCondition[] | undefined
-app.whenReady().then(() => {
-  ipcMain.handle('auto-alter', (event, data) => {
+  const alter = new Alter()
+  const tujen = new Tujen()
+  const saver = new Saver()
+
+  let modifiers: AlterCondition[] | undefined
+
+  await ipcMain.handle('auto-alter', (event, data) => {
     modifiers = [data.modifier1, data.modifier2]
   })
-}).then(() => {
+
   globalShortcut.register('F2', async () => {
     if (alter.altering) {
       alter.stop()
@@ -99,7 +102,9 @@ app.whenReady().then(() => {
       await saver.batchSaveFromCurrentCursorPosition()
     }
   });
-}).then(createWindow);
+
+  await createWindow();
+})()
 
 app.on('window-all-closed', () => {
   if (platform !== 'darwin') {
