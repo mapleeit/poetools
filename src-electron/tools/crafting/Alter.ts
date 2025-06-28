@@ -36,7 +36,7 @@ export class Alter extends BaseTool {
     this.logger.info(`batch alter: start condition ${maxTimes === 0 ? 'Infinity' : `${maxTimes} times`}`)
     this.reset()
 
-    await this.mouseAction.setMousePosition(this.positionManager.item)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.item)
     await this.delay()
     const itemDescription = await this.readItemDescription()
     let equipment = this.equipmentParser.parseEquipment(itemDescription)
@@ -115,62 +115,62 @@ export class Alter extends BaseTool {
   }
 
   private async useKnowledgeScroll() {
-    await this.mouseAction.setMousePosition(this.positionManager.knowledgeScroll)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.knowledgeScroll)
     await this.delay()
     await this.mouseAction.click(Button.RIGHT)
     await this.delay()
-    await this.mouseAction.setMousePosition(this.positionManager.item)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.item)
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
   }
 
   private async useOrbOfScouring() {
-    await this.mouseAction.setMousePosition(this.positionManager.orbOfScouring)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.orbOfScouring)
     await this.delay()
     await this.mouseAction.click(Button.RIGHT)
     await this.delay()
-    await this.mouseAction.setMousePosition(this.positionManager.item)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.item)
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
   }
 
   private async useTransmutationOrb() {
-    await this.mouseAction.setMousePosition(this.positionManager.transmutationOrb)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.transmutationOrb)
     await this.delay()
     await this.mouseAction.click(Button.RIGHT)
     await this.delay()
-    await this.mouseAction.setMousePosition(this.positionManager.item)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.item)
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
   }
 
   private async useOrbOfAlteration() {
-    await this.mouseAction.setMousePosition(this.positionManager.orbOfAlteration)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.orbOfAlteration)
     await this.delay()
     await this.mouseAction.click(Button.RIGHT)
     await this.delay()
-    await this.mouseAction.setMousePosition(this.positionManager.item)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.item)
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
   }
 
   private async useAugmentationOrb() {
-    await this.mouseAction.setMousePosition(this.positionManager.augmentationOrb)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.augmentationOrb)
     await this.delay()
     await this.mouseAction.click(Button.RIGHT)
     await this.delay()
-    await this.mouseAction.setMousePosition(this.positionManager.item)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.item)
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
   }
 
   private async readItemDescription() {
-    await this.mouseAction.setMousePosition(this.positionManager.item)
+    await this.mouseAction.setMousePosition(this.positionManager.positions.item)
     await this.delay()
     await this.keyboardAction.click(Key.LeftControl, Key.C)
     await this.delay()

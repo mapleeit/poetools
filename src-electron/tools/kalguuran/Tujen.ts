@@ -23,7 +23,11 @@ export class Tujen extends BaseTool {
     '裂隙戒指',
     '富豪石',
     '制图钉',
-    '宝石匠的棱镜'
+    '宝石匠的棱镜',
+    '幻色石',
+    '改造石',
+    '点金石',
+    '裂隙碎片(夏乌拉)'
   ]
 
   private maxRow = 11
@@ -36,13 +40,14 @@ export class Tujen extends BaseTool {
   }
 
   public async batchExchange() {
+    this.logger.info('Batch exchange')
     columnLoop:
     for (let column = 1; column <= this.maxColumn; column++) {
       for (let row = 1; row <= this.maxRow; row++) {
         const result = await this.exchange(
           new Point(
-            this.positionManager.item1_1.x + (column - 1) * 100,
-            this.positionManager.item1_1.y + (row - 1) * 105
+            this.positionManager.positions.item1_1.x + (column - 1) * 75,
+            this.positionManager.positions.item1_1.y + (row - 1) * 76
           )
         )
 
@@ -55,7 +60,8 @@ export class Tujen extends BaseTool {
   }
 
   public async goNextPage() {
-    await this.mouseAction.setMousePosition(this.positionManager.nextPage)
+    this.logger.info('Go to next page')
+    await this.mouseAction.setMousePosition(this.positionManager.positions.nextPage)
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
@@ -80,7 +86,7 @@ export class Tujen extends BaseTool {
         await this.mouseAction.scrollDown(10000)
       }
 
-      await this.mouseAction.setMousePosition(this.positionManager.confirm)
+      await this.mouseAction.setMousePosition(this.positionManager.positions.confirm)
       await this.delay()
       await this.mouseAction.click(Button.LEFT)
       await this.delay()

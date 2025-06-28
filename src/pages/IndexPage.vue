@@ -37,11 +37,11 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-  modifier1.value = '能量护盾上限提高'
-  modifier1Min.value = 13
-  modifier1Max.value = 20
-  modifier2.value = '你和你的召唤生物受到的反射元素伤害降低'
-  modifier2Min.value = 46
+  modifier1.value = '你被敌人击中时获得'
+  modifier1Min.value = 3
+  modifier1Max.value = 30
+  modifier2.value = '生效期间，护甲提高'
+  modifier2Min.value = 56
   modifier2Max.value = 100
 })
 </script>
