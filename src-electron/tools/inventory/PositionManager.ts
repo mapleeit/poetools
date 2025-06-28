@@ -1,14 +1,39 @@
 import { Point } from 'app/shared/Point'
+import { screen } from 'electron'
 
 import { MouseAction } from '../MouseAction'
 
 export class PositionManager {
   private mouseAction = new MouseAction()
 
-  private baseInventoryFirstItem = new Point(2595, 1227)
+  // Base coordinates for 4K (3840x2160)
+  private baseInventoryFirstItem4K = new Point(2595, 1227)
+  private diffX4K = 106
+  private diffY4K = 106
 
-  private diffX = 106
-  private diffY = 106
+  private get baseInventoryFirstItem() {
+    const primaryDisplay = screen.getPrimaryDisplay()
+    const screenWidth = primaryDisplay.size.width
+    const scaleRatio = screenWidth / 3840 // Scale relative to 4K width
+
+    return new Point(
+      Math.round(this.baseInventoryFirstItem4K.x * scaleRatio),
+      Math.round(this.baseInventoryFirstItem4K.y * scaleRatio)
+    )
+  }
+
+  private get diffX() {
+    const primaryDisplay = screen.getPrimaryDisplay()
+    const screenWidth = primaryDisplay.size.width
+    return Math.round(this.diffX4K * (screenWidth / 3840))
+  }
+
+  private get diffY() {
+    const primaryDisplay = screen.getPrimaryDisplay()
+    const screenWidth = primaryDisplay.size.width
+    return Math.round(this.diffY4K * (screenWidth / 3840))
+  }
+
   public maxRows = 5
   public maxColumns = 12
 
