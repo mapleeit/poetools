@@ -137,5 +137,29 @@ describe('EquipmentParser', () => {
         ]
       })
     })
+
+    it('should parse magic ring', () => {
+      const description = `物品类别: 可堆叠通货
+稀 有 度: 通货
+改造石
+--------
+堆叠数量: 3,916 / 20
+--------
+重置一件魔法物品上的所有属性
+--------
+右键点击此物品，再左键点击一件魔法物品(包括地图和保险箱等)来使用。
+按住 Shift 点击以分开堆叠`
+
+      const result = parser.parseEquipment(description)
+
+      assert.deepEqual(result, {
+        category: '可堆叠通货',
+        rarity: '通货',
+        name: ['改造石'],
+        count: 3916,
+        maxCount: 20,
+        effects: []
+      })
+    })
   })
 })

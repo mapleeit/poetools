@@ -21,6 +21,8 @@ export interface Equipment {
   baseProperties: EquipmentProperty[];
   properties: EquipmentProperty[];
   effects: string[];
+  count: number;
+  maxCount: number;
 }
 
 export enum EquipmentRarity {
@@ -104,6 +106,11 @@ export class EquipmentParser {
       if (trimmedLine.startsWith('物品等级:')) {
         equipment.itemLevel = parseInt(trimmedLine.split(':')[1]?.trim() ?? '')
         currentSection = 'itemLevel'
+        continue
+      }
+      if (trimmedLine.startsWith('堆叠数量:')) {
+        equipment.count = parseInt(trimmedLine.split(':')[1]?.trim().replace(/,/g, '') ?? '')
+        equipment.maxCount = parseInt(trimmedLine.split('/')[1]?.trim() ?? '')
         continue
       }
 

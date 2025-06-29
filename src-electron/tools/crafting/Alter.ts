@@ -8,6 +8,7 @@ import { PositionManager } from '../PositionManager'
 import { BaseTool } from '../BaseTool'
 import { EquipmentProperty } from '../EquipmentProperty';
 import { Notify } from '../Notify';
+import type { Point } from 'app/shared/Point'
 
 export interface AlterCondition {
   description: string
@@ -24,6 +25,16 @@ export class Alter extends BaseTool {
   private stopSignal = false;
   public altering = false
 
+  public env = {
+    orbs: {
+      orbOfAlteration: 0,
+      orbOfScouring: 0,
+      augmentationOrb: 0,
+      transmutationOrb: 0,
+      knowledgeScroll: 0,
+    }
+  }
+
   constructor() {
     super('alter');
   }
@@ -35,6 +46,39 @@ export class Alter extends BaseTool {
     maxTimes?: number,
     conditions: AlterCondition[]
   }) {
+    try {
+      const equipment = await this.doBatchAlter({
+        maxTimes,
+        conditions
+      })
+
+      if (equipment) {
+        this.notify.markdown({
+          title: 'alter success',
+          md: `\`\`\`json\n${JSON.stringify(equipment, null, 2)}\`\`\``
+        })
+      } else {
+        // manaully cancelled
+      }
+    } catch (error) {
+      this.logger.error(error)
+      this.notify.markdown({
+        title: 'alter failed',
+        md: error instanceof Error ? error.message : String(error)
+      })
+    }
+  }
+
+  public async doBatchAlter({
+    maxTimes = 0,
+    conditions
+  }: {
+    maxTimes?: number,
+    conditions: AlterCondition[]
+  }) {
+    this.logger.info('batch alter: start detect environment')
+    await this.detectEnvironment()
+
     this.logger.info(`batch alter: start condition ${maxTimes === 0 ? 'Infinity' : `${maxTimes} times`}`)
     this.reset()
 
@@ -43,10 +87,6 @@ export class Alter extends BaseTool {
     const itemDescription = await this.readItemDescription()
     let equipment = this.equipmentParser.parseEquipment(itemDescription)
     if (this.validateConditions(equipment, conditions)) {
-      this.notify.markdown({
-        title: 'alter success',
-        md: JSON.stringify(equipment, null, 2)
-      })
       this.logger.info('batch alter: start success')
       this.logger.debug(equipment)
       return equipment
@@ -70,10 +110,6 @@ export class Alter extends BaseTool {
       equipment = await this.alter()
       if (this.validateConditions(equipment, conditions)) {
         this.altering = false
-        this.notify.markdown({
-          title: 'alter success',
-          md: JSON.stringify(equipment, null, 2)
-        })
         this.logger.info('batch alter: end success')
         return equipment
       }
@@ -81,10 +117,6 @@ export class Alter extends BaseTool {
       equipment = await this.augmentIfNeeded(equipment)
       if (this.validateConditions(equipment, conditions)) {
         this.altering = false
-        this.notify.markdown({
-          title: 'alter success',
-          md: JSON.stringify(equipment, null, 2)
-        })
         this.logger.info('batch alter: end success')
         return equipment
       }
@@ -92,6 +124,44 @@ export class Alter extends BaseTool {
 
     this.altering = false
     this.logger.info('batch alter: end fail')
+  }
+
+  public async detectEnvironment() {
+    const setEnv = (name: string, count: number) => {
+      switch (name) {
+        case '改造石':
+          this.env.orbs.orbOfAlteration = count
+          break
+        case '蜕变石':
+          this.env.orbs.transmutationOrb = count
+          break
+        case '重铸石':
+          this.env.orbs.orbOfScouring = count
+          break
+        case '增幅石':
+          this.env.orbs.augmentationOrb = count
+          break
+        default:
+          this.logger.error(`Unknown orb: ${name}`)
+      }
+    }
+
+    const positions = [
+      this.positionManager.positions.orbOfAlteration,
+      this.positionManager.positions.orbOfScouring,
+      this.positionManager.positions.augmentationOrb,
+      this.positionManager.positions.transmutationOrb,
+      this.positionManager.positions.knowledgeScroll,
+    ];
+
+    for await (const position of positions) {
+      const itemDescription = await this.readItemDescription(position)
+      this.logger.debug(itemDescription)
+      const item = this.equipmentParser.parseEquipment(itemDescription);
+      setEnv(item.name[0] ?? '', item.count)
+    }
+
+    this.logger.info(`batch alter: environment detected: ${JSON.stringify(this.env, null, 2)}`)
   }
 
   public stop() {
@@ -124,6 +194,10 @@ export class Alter extends BaseTool {
   }
 
   private async useKnowledgeScroll() {
+    if (this.env.orbs.knowledgeScroll === 0) {
+      throw new Error('knowledge scroll is not enough')
+    }
+
     await this.mouseAction.setMousePosition(this.positionManager.positions.knowledgeScroll)
     await this.delay()
     await this.mouseAction.click(Button.RIGHT)
@@ -132,9 +206,15 @@ export class Alter extends BaseTool {
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
+
+    this.env.orbs.knowledgeScroll--
   }
 
   private async useOrbOfScouring() {
+    if (this.env.orbs.orbOfScouring === 0) {
+      throw new Error('orb of scouring is not enough')
+    }
+
     await this.mouseAction.setMousePosition(this.positionManager.positions.orbOfScouring)
     await this.delay()
     await this.mouseAction.click(Button.RIGHT)
@@ -143,9 +223,15 @@ export class Alter extends BaseTool {
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
+
+    this.env.orbs.orbOfScouring--
   }
 
   private async useTransmutationOrb() {
+    if (this.env.orbs.transmutationOrb === 0) {
+      throw new Error('transmutation orb is not enough')
+    }
+
     await this.mouseAction.setMousePosition(this.positionManager.positions.transmutationOrb)
     await this.delay()
     await this.mouseAction.click(Button.RIGHT)
@@ -154,9 +240,15 @@ export class Alter extends BaseTool {
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
+
+    this.env.orbs.transmutationOrb--
   }
 
   private async useOrbOfAlteration() {
+    if (this.env.orbs.orbOfAlteration === 0) {
+      throw new Error('orb of alteration is not enough')
+    }
+
     await this.mouseAction.setMousePosition(this.positionManager.positions.orbOfAlteration)
     await this.delay()
     await this.mouseAction.click(Button.RIGHT)
@@ -165,9 +257,15 @@ export class Alter extends BaseTool {
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
+
+    this.env.orbs.orbOfAlteration--
   }
 
   private async useAugmentationOrb() {
+    if (this.env.orbs.augmentationOrb === 0) {
+      throw new Error('augmentation orb is not enough')
+    }
+
     await this.mouseAction.setMousePosition(this.positionManager.positions.augmentationOrb)
     await this.delay()
     await this.mouseAction.click(Button.RIGHT)
@@ -176,10 +274,12 @@ export class Alter extends BaseTool {
     await this.delay()
     await this.mouseAction.click(Button.LEFT)
     await this.delay()
+
+    this.env.orbs.augmentationOrb--
   }
 
-  private async readItemDescription() {
-    await this.mouseAction.setMousePosition(this.positionManager.positions.item)
+  private async readItemDescription(position: Point = this.positionManager.positions.item) {
+    await this.mouseAction.setMousePosition(position)
     await this.delay()
     await this.keyboardAction.click(Key.LeftControl, Key.C)
     await this.delay()

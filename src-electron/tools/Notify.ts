@@ -11,9 +11,8 @@ export class Notify {
     }
 
     const { title = '', md = '' } = info
-    const mdContent = `\`\`\`json\n${md}\`\`\``
 
-    fetch(`https://api2.pushdeer.com/message/push?pushkey=${this.pushkey}&text=${title}&desp=${encodeURIComponent(mdContent)}&type=markdown`)
+    fetch(`https://api2.pushdeer.com/message/push?pushkey=${this.pushkey}&text=${title}&desp=${encodeURIComponent(md)}&type=markdown`)
       .catch(err => this.logger.error('Failed to send success notification:', err))
   }
 }
