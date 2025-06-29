@@ -4,9 +4,10 @@ import os from 'os';
 import { fileURLToPath } from 'url'
 import 'dotenv/config'
 
-import { Alter, type AlterCondition } from './tools/crafting/Alter'
+import { type AlterCondition } from './tools/crafting/Alter'
 import { Tujen } from './tools/kalguuran/Tujen'
 import { Saver } from './tools/inventory/Saver'
+import { MultiAlter } from './tools/crafting/MultiAlter';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -60,7 +61,7 @@ function createWindow() {
 (async () => {
   await app.whenReady();
 
-  const alter = new Alter()
+  const multiAlter = new MultiAlter()
   const tujen = new Tujen()
   const saver = new Saver()
 
@@ -71,11 +72,13 @@ function createWindow() {
   })
 
   globalShortcut.register('F2', async () => {
-    if (alter.altering) {
-      alter.stop()
+    if (multiAlter.multiAltering) {
+      multiAlter.stop()
     } else {
-      await alter.batchAlter({
-        conditions: modifiers ?? []
+      await multiAlter.multiAlter({
+        conditions: modifiers ?? [],
+        startColumn: 1,
+        startRow: 1
       })
     }
   });
