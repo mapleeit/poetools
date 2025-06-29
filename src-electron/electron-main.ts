@@ -2,6 +2,7 @@ import { app, BrowserWindow, globalShortcut, ipcMain } from 'electron';
 import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url'
+import 'dotenv/config'
 
 import { Alter, type AlterCondition } from './tools/crafting/Alter'
 import { Tujen } from './tools/kalguuran/Tujen'
@@ -65,8 +66,8 @@ function createWindow() {
 
   let modifiers: AlterCondition[] | undefined
 
-  await ipcMain.handle('auto-alter', (event, data) => {
-    modifiers = [data.modifier1, data.modifier2]
+  await ipcMain.handle('auto-alter', (event, data: AlterCondition[]) => {
+    modifiers = data
   })
 
   globalShortcut.register('F2', async () => {

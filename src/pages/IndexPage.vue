@@ -54,16 +54,11 @@ const removeModifier = (index: number) => {
 }
 
 watchEffect(() => {
-  const data = modifiers.value.reduce((acc, modifier, index) => {
-    acc[`modifier${index + 1}`] = {
-      description: modifier.description,
-      min: modifier.min,
-      max: modifier.max
-    }
-    return acc
-  }, {} as Record<string, Modifier>)
-
-  window.ioApi.send('auto-alter', data)
+  window.ioApi.send('auto-alter', modifiers.value.map(item => ({
+    description: item.description,
+    min: item.min,
+    max: item.max
+  })))
 })
 
 onMounted(() => {

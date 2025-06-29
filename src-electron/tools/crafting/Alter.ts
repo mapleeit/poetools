@@ -7,6 +7,7 @@ import { EquipmentParser, EquipmentRarity, UNDEFINED_EQUIPMENT_DESCRIPTION } fro
 import { PositionManager } from '../PositionManager'
 import { BaseTool } from '../BaseTool'
 import { EquipmentProperty } from '../EquipmentProperty';
+import { Notify } from '../Notify';
 
 export interface AlterCondition {
   description: string
@@ -17,6 +18,7 @@ export interface AlterCondition {
 export class Alter extends BaseTool {
   private equipmentParser = new EquipmentParser()
   private positionManager = new PositionManager()
+  private notify = new Notify()
 
   private times = 0;
   private stopSignal = false;
@@ -41,6 +43,10 @@ export class Alter extends BaseTool {
     const itemDescription = await this.readItemDescription()
     let equipment = this.equipmentParser.parseEquipment(itemDescription)
     if (this.validateConditions(equipment, conditions)) {
+      this.notify.markdown({
+        title: 'alter success',
+        md: JSON.stringify(equipment, null, 2)
+      })
       this.logger.info('batch alter: start success')
       this.logger.debug(equipment)
       return equipment
@@ -52,7 +58,6 @@ export class Alter extends BaseTool {
       throw new Error('Conditions is required')
     }
 
-    this.logger.debug(`Conditions: ${conditions}`)
     this.altering = true
     for (let i = 0; i < (maxTimes === 0 ? Infinity : maxTimes); i++) {
       if (this.stopSignal) {
@@ -65,18 +70,22 @@ export class Alter extends BaseTool {
       equipment = await this.alter()
       if (this.validateConditions(equipment, conditions)) {
         this.altering = false
+        this.notify.markdown({
+          title: 'alter success',
+          md: JSON.stringify(equipment, null, 2)
+        })
         this.logger.info('batch alter: end success')
-        this.logger.debug(conditions)
-        this.logger.debug(equipment)
         return equipment
       }
 
       equipment = await this.augmentIfNeeded(equipment)
       if (this.validateConditions(equipment, conditions)) {
         this.altering = false
+        this.notify.markdown({
+          title: 'alter success',
+          md: JSON.stringify(equipment, null, 2)
+        })
         this.logger.info('batch alter: end success')
-        this.logger.debug(conditions)
-        this.logger.debug(equipment)
         return equipment
       }
     }
@@ -208,9 +217,13 @@ export class Alter extends BaseTool {
   }
 
   private validateConditions(equipment: Equipment, conditions: AlterCondition[]) {
+    this.logger.debug(`Conditions: ${JSON.stringify(conditions, null, 2)}`)
+    this.logger.debug(`Equipment: ${JSON.stringify(equipment, null, 2)}`)
+
+    let result
     switch (equipment.rarity) {
       case EquipmentRarity.MAGIC:
-        return conditions
+        result = conditions
           .filter(condition => condition.description?.trim() !== '')
           .some(condition => [...equipment.properties, ...equipment.name].some(p => {
             if (p instanceof EquipmentProperty) {
@@ -219,6 +232,9 @@ export class Alter extends BaseTool {
 
             return p.includes(condition.description)
           }))
+
+        this.logger.debug(`Validation: ${Boolean(result)}`)
+        return result
       case EquipmentRarity.RARE:
         return false
       default:
