@@ -39,39 +39,6 @@ export class Alter extends BaseTool {
     super('alter');
   }
 
-  public async batchAlter({
-    maxTimes = 0,
-    conditions,
-    position = this.positionManager.positions.item
-  }: {
-    maxTimes?: number,
-    conditions: AlterCondition[]
-    position?: Point
-  }) {
-    try {
-      const equipment = await this.doBatchAlter({
-        maxTimes,
-        conditions,
-        position
-      })
-
-      if (equipment) {
-        this.notify.markdown({
-          title: 'alter success',
-          md: `\`\`\`json\n${JSON.stringify(equipment, null, 2)}\`\`\``
-        })
-      } else {
-        // manaully cancelled
-      }
-    } catch (error) {
-      this.logger.error(error)
-      this.notify.markdown({
-        title: 'alter failed',
-        md: error instanceof Error ? error.message : String(error)
-      })
-    }
-  }
-
   public async doBatchAlter({
     maxTimes = 0,
     conditions,
