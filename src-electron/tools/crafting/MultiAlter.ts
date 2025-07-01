@@ -93,7 +93,7 @@ export class MultiAlter extends Alter {
   }
 
   public override stop() {
-    super.stop()
     this.stopMultiSignal = true
+    super.stop()
   }
 }
