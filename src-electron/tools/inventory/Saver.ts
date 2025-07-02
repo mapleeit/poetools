@@ -30,30 +30,47 @@ export class Saver extends BaseTool {
   async batchSave(startRow: number = 1, startColumn: number = 1) {
     this.logger.info('batch save: start')
 
+    this.saving = true
     await this.keyboardAction.pressKey(Key.LeftControl)
 
-    this.saving = true
-    columnLoop:
-    for (let column = startColumn; column <= this.inventoryPositionManager.maxColumns; column++) {
-      for (let row = column === startColumn ? startRow : 1; row <= this.inventoryPositionManager.maxRows; row++) {
+    await this.inventoryPositionManager.iterateBaseInventory(
+      { startRow, startColumn },
+      async ({ row, column }) => {
         if (this.stopSignal) {
           this.logger.info('batch save: end by stop signal')
-          this.saving = false
-          this.stopSignal = false
-          break columnLoop
+          return true
         }
 
         this.logger.info(` - Saving from position ${row}, ${column}`)
-        const position = this.inventoryPositionManager.getPosition(row, column)
+        const position = this.inventoryPositionManager.getBaseInventoryPosition(row, column)
 
         await this.delay([20, 40])
         await this.mouseAction.setMousePosition(position)
         await this.mouseAction.click(Button.LEFT)
       }
-    }
+    )
+
+    await this.inventoryPositionManager.iterateExtendedInventory(
+      { startRow, startColumn },
+      async ({ row, column }) => {
+        if (this.stopSignal) {
+          this.logger.info('batch save: end by stop signal')
+          return true
+        }
+
+        this.logger.info(` - Saving from position ${row}, ${column}`)
+        const position = this.inventoryPositionManager.getExtendedInventoryPosition(row, column)
+
+        await this.delay([20, 40])
+        await this.mouseAction.setMousePosition(position)
+        await this.mouseAction.click(Button.LEFT)
+      }
+    )
+
     await this.keyboardAction.releaseKey(Key.LeftControl)
 
     this.saving = false
+    this.stopSignal = false
     this.logger.info('batch save: end')
   }
 
