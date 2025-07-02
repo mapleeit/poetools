@@ -62,56 +62,60 @@ export class MultiAlter extends Alter {
     await this.detectEnvironment()
 
     this.multiAltering = true
-    await this.inventoryPositionManager.iterateBaseInventory(
-      { startRow, startColumn },
-      async ({ row, column }) => {
-        if (this.stopMultiSignal) {
-          this.logger.info('multi alter: end by stop signal')
-          return true
+    try {
+      await this.inventoryPositionManager.iterateBaseInventory(
+        { startRow, startColumn },
+        async ({ row, column }) => {
+          if (this.stopMultiSignal) {
+            this.logger.info('multi alter: end by stop signal')
+            return true
+          }
+
+          this.logger.info(` - Altering from position ${row}, ${column}`)
+          const position = this.inventoryPositionManager.getBaseInventoryPosition(row, column)
+
+          this.logger.info(position)
+          const equipment = await this.doBatchAlter({
+            maxTimes,
+            conditions,
+            position
+          })
+
+          if (equipment) {
+            this.list.add(JSON.stringify(equipment))
+          }
         }
+      )
 
-        this.logger.info(` - Altering from position ${row}, ${column}`)
-        const position = this.inventoryPositionManager.getBaseInventoryPosition(row, column)
+      await this.inventoryPositionManager.iterateExtendedInventory(
+        { startRow, startColumn },
+        async ({ row, column }) => {
+          if (this.stopMultiSignal) {
+            this.logger.info('multi alter: end by stop signal')
+            return true
+          }
 
-        this.logger.info(position)
-        const equipment = await this.doBatchAlter({
-          maxTimes,
-          conditions,
-          position
-        })
+          this.logger.info(` - Altering from position ${row}, ${column}`)
+          const position = this.inventoryPositionManager.getExtendedInventoryPosition(row, column)
 
-        if (equipment) {
-          this.list.add(JSON.stringify(equipment))
+          this.logger.info(position)
+          const equipment = await this.doBatchAlter({
+            maxTimes,
+            conditions,
+            position
+          })
+
+          if (equipment) {
+            this.list.add(JSON.stringify(equipment))
+          }
         }
-      }
-    )
-
-    await this.inventoryPositionManager.iterateExtendedInventory(
-      { startRow, startColumn },
-      async ({ row, column }) => {
-        if (this.stopMultiSignal) {
-          this.logger.info('multi alter: end by stop signal')
-          return true
-        }
-
-        this.logger.info(` - Altering from position ${row}, ${column}`)
-        const position = this.inventoryPositionManager.getExtendedInventoryPosition(row, column)
-
-        this.logger.info(position)
-        const equipment = await this.doBatchAlter({
-          maxTimes,
-          conditions,
-          position
-        })
-
-        if (equipment) {
-          this.list.add(JSON.stringify(equipment))
-        }
-      }
-    )
-
-    this.multiAltering = false
-    this.stopMultiSignal = false
+      )
+    } catch (_) {
+      this.multiAltering = false
+    } finally {
+      this.multiAltering = false
+      this.stopMultiSignal = false
+    }
   }
 
   public override stop() {
