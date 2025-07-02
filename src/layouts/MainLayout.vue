@@ -3,11 +3,6 @@
     <q-drawer
       v-model="drawer"
       show-if-above
-      :mini="miniState"
-      @mouseenter="miniState = false"
-      @mouseleave="miniState = true"
-      mini-to-overlay
-
       :width="200"
       :breakpoint="500"
       bordered
@@ -15,13 +10,35 @@
     >
       <q-scroll-area class="fit" :horizontal-thumb-style="{ opacity: '0' }">
         <q-list padding>
-          <q-item clickable v-ripple>
+          <q-item
+            clickable
+            v-ripple
+            :active="currentRoute === '/craft'"
+            active-class="bg-primary text-white"
+            to="/craft"
+          >
             <q-item-section avatar>
               <q-icon name="construction" />
             </q-item-section>
 
             <q-item-section>
               Craft
+            </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            :active="currentRoute === '/saver'"
+            active-class="bg-primary text-white"
+            to="/saver"
+          >
+            <q-item-section avatar>
+              <q-icon name="save" />
+            </q-item-section>
+
+            <q-item-section>
+              Saver
             </q-item-section>
           </q-item>
         </q-list>
@@ -35,11 +52,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useQuasar } from 'quasar'
+import { useRoute } from 'vue-router'
 
 const $q = useQuasar()
-
+const route = useRoute()
 const drawer = ref(false)
-const miniState = ref(true)
+
+const currentRoute = computed(() => route.path)
 </script>

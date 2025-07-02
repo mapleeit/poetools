@@ -45,5 +45,7 @@ const convertToInterface = (object: object) => {
 contextBridge.exposeInMainWorld('mouseApi', convertToInterface(new MouseAction()))
 contextBridge.exposeInMainWorld('keyboardApi', convertToInterface(new KeyboardAction()))
 contextBridge.exposeInMainWorld('ioApi', {
-  send: (event: string, data: unknown) => ipcRenderer.invoke(event, data)
+  send: (event: string, data: unknown) => ipcRenderer.invoke(event, data),
+  saveData: (key: string, data: unknown) => ipcRenderer.invoke('save-data', key, data),
+  loadData: (key: string) => ipcRenderer.invoke('load-data', key)
 })

@@ -2,6 +2,7 @@ import { app, BrowserWindow, globalShortcut, ipcMain } from 'electron';
 import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url'
+import fs from 'fs'
 import 'dotenv/config'
 
 import { type AlterCondition } from './tools/crafting/Alter'
@@ -67,8 +68,50 @@ function createWindow() {
 
   let modifiers: AlterCondition[] | undefined
 
-  await ipcMain.handle('auto-alter', (event, data: AlterCondition[]) => {
+  // Get user data directory for saving files
+  const userDataPath = app.getPath('userData')
+  const saveFilePath = path.join(userDataPath, 'modifiers.json')
+
+  // Load saved modifiers on startup
+  try {
+    if (fs.existsSync(saveFilePath)) {
+      const savedData = fs.readFileSync(saveFilePath, 'utf8')
+      modifiers = JSON.parse(savedData)
+    }
+  } catch (error) {
+    console.error('Failed to load saved modifiers:', error)
+  }
+
+  ipcMain.handle('auto-alter', (event, data: AlterCondition[]) => {
     modifiers = data
+  })
+
+  // Save modifiers to local file
+  ipcMain.handle('save-data', (event, key: string, data: AlterCondition[]) => {
+    try {
+      fs.writeFileSync(saveFilePath, JSON.stringify({ [key]: data }, null, 2))
+      return { success: true }
+    } catch (error) {
+      console.error('Failed to save modifiers:', error)
+      return { success: false, error: (error as Error).message }
+    }
+  })
+
+  // Load modifiers from local file
+  ipcMain.handle('load-data', (event, key: string) => {
+    try {
+      if (fs.existsSync(saveFilePath)) {
+        const savedData = fs.readFileSync(saveFilePath, 'utf8')
+        const loadedData = JSON.parse(savedData)
+        modifiers = loadedData[key]
+        return { success: true, data: loadedData[key] }
+      } else {
+        return { success: false, error: 'No saved data found' }
+      }
+    } catch (error) {
+      console.error('Failed to load modifiers:', error)
+      return { success: false, error: (error as Error).message }
+    }
   })
 
   globalShortcut.register('F2', async () => {

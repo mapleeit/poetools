@@ -7,6 +7,8 @@ declare global {
     keyboardApi: KeyboardProviderInterface,
     ioApi: {
       send: (event: string, data: unknown) => void
+      saveData: (key: string, data: unknown) => Promise<{ success: boolean; error?: string }>
+      loadData: (key: string) => Promise<{ success: boolean; data?: unknown; error?: string }>
     }
   }
 }
