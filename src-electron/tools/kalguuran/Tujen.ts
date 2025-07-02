@@ -96,6 +96,8 @@ export class Tujen extends BaseTool {
   }
 
   private async readItemDescription() {
+    await clipboard.clear()
+    await this.delay()
     await this.keyboardAction.click(Key.LeftControl, Key.C)
     await this.delay([100, 200])
     const itemDescription = clipboard.readText()

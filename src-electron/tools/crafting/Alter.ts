@@ -250,6 +250,8 @@ export class Alter extends BaseTool {
   protected async readItemDescription(position: Point = this.positionManager.positions.item) {
     await this.mouseAction.setMousePosition(position)
     await this.delay()
+    await clipboard.clear()
+    await this.delay()
     await this.keyboardAction.click(Key.LeftControl, Key.C)
     await this.delay()
     const itemDescription = clipboard.readText()
