@@ -45,5 +45,8 @@ See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-
 - [x] 查找通货状态信息
 - [x] 自动改造
 - [x] 自动存包
+- [x] 自动图金
 - [ ] 自动洗地图
-- [ ] 优化自动改造和自动存包的 UI
+- [ ] 优化自动改造的 UI
+- [ ] 优化自动存包的 UI
+- [ ] 优化自动图金的 UI
