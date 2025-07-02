@@ -33,8 +33,6 @@ export class Tujen extends BaseTool {
   private maxRow = 11
   private maxColumn = 2
 
-  private last2ItemsDescription: string[] = ['', '']
-
   constructor() {
     super('tujen');
   }
@@ -46,8 +44,8 @@ export class Tujen extends BaseTool {
       for (let row = 1; row <= this.maxRow; row++) {
         const result = await this.exchange(
           new Point(
-            this.positionManager.positions.item1_1.x + (column - 1) * 75,
-            this.positionManager.positions.item1_1.y + (row - 1) * 76
+            this.positionManager.positions.item1_1.x + (column - 1) * this.positionManager.positions.singlePoint.x,
+            this.positionManager.positions.item1_1.y + (row - 1) * this.positionManager.positions.singlePoint.y
           )
         )
 
@@ -74,7 +72,7 @@ export class Tujen extends BaseTool {
     const itemDescription = await this.readItemDescription()
     this.logger.debug(itemDescription)
 
-    if (itemDescription === this.last2ItemsDescription[0] && itemDescription === this.last2ItemsDescription[1]) {
+    if (!itemDescription) {
       return false
     }
 
@@ -91,8 +89,6 @@ export class Tujen extends BaseTool {
       await this.mouseAction.click(Button.LEFT)
       await this.delay()
     }
-
-    this.last2ItemsDescription = [this.last2ItemsDescription[1]!, itemDescription]
   }
 
   private async readItemDescription() {

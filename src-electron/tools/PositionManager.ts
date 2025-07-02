@@ -4,6 +4,7 @@ import { logger } from './logger';
 
 export class PositionManager {
   public positions = {
+    singlePoint: new Point(52, 52),
     // ------------ Stash ------------
     item: new Point(328, 450),
 
