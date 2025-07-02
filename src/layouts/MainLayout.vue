@@ -22,7 +22,7 @@
             </q-item-section>
 
             <q-item-section>
-              Craft
+              自动改造配置
             </q-item-section>
           </q-item>
 
@@ -38,7 +38,7 @@
             </q-item-section>
 
             <q-item-section>
-              Saver
+              自动存包配置
             </q-item-section>
           </q-item>
         </q-list>

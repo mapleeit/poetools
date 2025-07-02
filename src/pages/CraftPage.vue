@@ -3,7 +3,7 @@
     <q-card class="q-pa-md" flat>
       <div class="row q-mb-md">
         <div class="col">
-          <h5 class="q-my-none">Alter Configuration</h5>
+          <h5 class="q-my-none">自动改造配置</h5>
         </div>
       </div>
 
